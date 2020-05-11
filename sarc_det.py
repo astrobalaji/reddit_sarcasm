@@ -9,28 +9,34 @@ Created on Thu Dec 20 18:41:44 2018
 import pandas as pd
 import numpy as np
 import spacy as sp
-from tqdm._tqdm_notebook import tqdm_notebook
+from tqdm import tqdm
 from nltk.stem.snowball import SnowballStemmer
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
 ### TQDM for progress during preprocessing ###
-tqdm_notebook.pandas()
+tqdm.pandas()
 
 ### loading text corpus for NLP ###
 nlp = sp.load("en_core_web_lg")
 stemmer = SnowballStemmer('english', ignore_stopwords=True)
+
+get_ipython().config.get('IPKernelApp', {})['parent_appname'] = ""
 
 
 ### Mapped function that converts a string into word vectors through spacy english corpus ####
 def col2vec(s):
     slist = str(s).split(" ")
     s= " ".join([stemmer.stem(st) for st in slist])
-    return nlp(s.decode('utf-8')).vector
+    return nlp(s).vector
 
 ###Loading Training data###
 train_df = pd.read_csv("train_10000samps.csv")
+
+train_df.drop(['Unnamed: 0'], axis = 1, inplace = True)
+
+train_df[train_df['label'] == 0].head()
 
 ###Prepare vectors to be trained from the comments###
 train_vecs = pd.DataFrame()
